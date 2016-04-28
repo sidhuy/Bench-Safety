@@ -1,6 +1,7 @@
 import gpiozero
 import time
 import math
+import readchar
 import Adafruit_CharLCDPlate
 
 userFile = ""
@@ -13,8 +14,9 @@ reps = 0
 prev = -1
 weight = 100
 lastTime = time()
+user_id = ""
 
-weightFlag = False
+userFlag = False
 
 sleep(2)
 
@@ -56,18 +58,11 @@ def calculate_velocity(d0,d1,old_d0,old_d1,last_read):
 
 while True:
     lcd.clear()
-    lcd.message('Please adjust your weight: '+ weight)
-    while not weightFlag:
-        b = lcd.buttons()
-        if b is not prev:
-            if lcd.buttonPressed(lcd.SELECT):
-                lcd.clear()
-                lcd.message('You may now begin lifting')
-                break
-            elif lcd.buttonPressed(lcd.UP):
-                weight += 5
-            elif lcd.buttonPressed(lcd.DOWN):
-                weight -= 5
+    lcd.message()
+    while not userFlag:
+        ui = readchar.readchar()
+        if ui != "\n":
+            
         else:
             now = time()
             since = now - lastTime
