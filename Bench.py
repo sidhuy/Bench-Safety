@@ -4,6 +4,7 @@ import math
 import readchar
 import Adafruit_CharLCDPlate
 
+REFRESH_TIME = 1.0
 userFile = ""
 lcd = display.lcd
 trig0 = OutputDevice()
@@ -12,11 +13,12 @@ trig1 = OutputDevice()
 echo1 = InputDevice()
 reps = 0
 prev = -1
-weight = 100
+weight = 0
 lastTime = time()
 user_id = ""
 
 userFlag = False
+weightFlag = False
 
 sleep(2)
 
@@ -57,20 +59,44 @@ def calculate_velocity(d0,d1,old_d0,old_d1,last_read):
 
 
 while True:
-    lcd.clear()
-    lcd.message()
+    users = get_Users()
     while not userFlag:
+        lcd.clear()
+        lcd.message("Please enter your user ID: " + user_id)
         ui = readchar.readchar()
-        if ui != "\n":
-            
-        else:
+        now = time()
+        while now - lastTime < REFRESH_TIME:
+            sleep(.5)
             now = time()
-            since = now - lastTime
-            if since > REFRESH_TIME or since < 0.0:
+        if ui != "\n":
+            user_id += ui
+        else:
+            if user_id in users:
+                userFlag = 1
+            else:
                 lcd.clear()
-                lcd.message('Please adjust your weight: '+ weight)
-                lastTime = now
+                lcd.message("Incorrect User ID")
+                user_id = ""
     
+    while not weightFlag:
+        weight_str = ""
+        lcd.clear()
+        lcd.message("Please enter bar weight: " + weight)
+        bi = readchar.readchar()
+        now = time()
+        while now - lastTime < REFRESH_TIME:
+            sleep(.5)
+            now = time()
+        if bi != "\n" and bi.isdigit():
+            weight_str += bi
+        else:
+            if weight_str.isdigit():
+                weight = int(weight_str)
+                weightFlag = 1
+            else:
+                lcd.clear()
+                lcd.message("Incorrect char for weight")
+                weight_str = ""
 
     duration = get_pulse_time()
     dist0_orig = calculate_distance(duration)
