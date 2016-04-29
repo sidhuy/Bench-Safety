@@ -2,11 +2,25 @@ import gpiozero
 import time
 import math
 import readchar
-import Adafruit_CharLCDPlate
+import Adafruit_CharLCD as LCD
 
+#LCD pin initializations
 REFRESH_TIME = 1.0
-userFile = ""
 lcd = display.lcd
+lcd_rs =
+lcd_en =
+lcd_d4 =
+lcd_d5 =
+lcd_d6 =
+lcd_d7 =
+lcd_backlight =
+#set lcd size for 16x2
+lcd_columns = 16
+lcd_rows = 2
+# Initialize the LCD using the pins above.
+lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
+
+userFile = ""
 trig0 = OutputDevice()
 echo0= InputDevice()
 trig1 = OutputDevice()
@@ -59,6 +73,7 @@ def calculate_velocity(d0,d1,old_d0,old_d1,last_read):
 
 
 while True:
+    lcd.enable_display(True)
     users = get_Users()
     while not userFlag:
         lcd.clear()
@@ -77,7 +92,9 @@ while True:
                 lcd.clear()
                 lcd.message("Incorrect User ID")
                 user_id = ""
-    
+    lcd.clear()
+    lcd.message("Hello " + users[user_id])
+    sleep(3)
     while not weightFlag:
         weight_str = ""
         lcd.clear()
